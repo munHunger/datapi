@@ -1,38 +1,46 @@
 <script context="module">
   export function preload({ params }) {
-    return this.fetch(`${params.slug}.json`)
+    return this.fetch("/index.json")
       .then(r => r.json())
-      .then(data => {
-        console.log(data);
-        data = data.reduce(
-          (acc, val) => {
-            switch (val.type) {
-              case "LITERAL":
-              case "ITALIC":
-              case "BOLD":
-              case "LINK":
-              case "HEADER":
-              default:
-                acc[acc.length - 1].left.push(val);
-                break;
-              case "CODEBLOCK":
-                acc.push({ left: [], right: [] });
-                acc[acc.length - 1].right.push(val);
+      .then(sidebar => {
+        return { sidebar };
+      })
+      .then(sidebar =>
+        this.fetch(`${params.slug}.json`)
+          .then(r => r.json())
+          .then(data => {
+            console.log(data);
+            data = data.reduce(
+              (acc, val) => {
+                switch (val.type) {
+                  case "LITERAL":
+                  case "ITALIC":
+                  case "BOLD":
+                  case "LINK":
+                  case "HEADER":
+                  default:
+                    acc[acc.length - 1].left.push(val);
+                    break;
+                  case "CODEBLOCK":
+                    acc.push({ left: [], right: [] });
+                    acc[acc.length - 1].right.push(val);
 
-                break;
-            }
-            return acc;
-          },
-          [{ left: [], right: [] }]
-        );
-        return { data, topic: params.slug.split("-") };
-      });
+                    break;
+                }
+                return acc;
+              },
+              [{ left: [], right: [] }]
+            );
+            return { data, topic: params.slug.split("-"), sidebar };
+          })
+      );
   }
 </script>
 
 <script>
   import Code from "../components/Code.svelte";
-  export let data, topic;
+  import Sidebar from "../components/Sidebar.svelte";
+  export let data, topic, sidebar;
 </script>
 
 <style>
@@ -49,11 +57,13 @@
   .left-bg,
   .middle-bg,
   .right-bg {
-    top: 0px;
     position: fixed;
     height: 100%;
-    padding: 2rem;
     box-sizing: border-box;
+  }
+  .middle-bg,
+  .right-bg {
+    padding: 2rem;
   }
 
   .left-bg {
@@ -87,6 +97,7 @@
     width: 90%;
     box-sizing: border-box;
     padding: 20px;
+    margin-top: 60px;
   }
   .part {
     display: inline;
@@ -106,25 +117,25 @@
   }
 
   .link {
-      position: relative;
-      display: inline;
+    position: relative;
+    display: inline;
   }
 
   .link .popup {
-      background-color: rgba(78, 91, 97, 0.9);
-      border-radius: 20px;
-      color: rgb(160, 170, 175);
-      padding: 20px;
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      width: 200px;
-      transform: translate(-50%, -100%);
-      opacity: 0;
-      transition: all 0.25s;
+    background-color: rgba(78, 91, 97, 0.9);
+    border-radius: 20px;
+    color: rgb(160, 170, 175);
+    padding: 20px;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 200px;
+    transform: translate(-50%, -100%);
+    opacity: 0;
+    transition: all 0.25s;
   }
   .link:hover .popup {
-      opacity: 1;
+    opacity: 1;
   }
 </style>
 
@@ -134,7 +145,9 @@
 
 <main>
   <div class="middle-bg" />
-  <div class="left-bg" />
+  <div class="left-bg">
+    <Sidebar data={sidebar.sidebar} />
+  </div>
   <div class="right-bg" />
   <div class="post">
     {#each data as segment, i}
@@ -170,7 +183,8 @@
                   </div>
                 {/if}
               </div>
-            {:else if part.type === 'NEX_LINE'}
+            {:else if part.type === 'NEW_LINE'}
+              <br />
               <br />
             {/if}
           {/each}

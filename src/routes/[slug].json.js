@@ -12,13 +12,13 @@ let startOfLine = {
 
 let bold = {
   name: "BOLD",
-  tokens: [/(?<=\s)/, /(\*|_){2}/, /[^\*_]+?/, /(\*|_){2}/, /(?=\s)/],
+  tokens: [/(?<=\s)/, /(\*|_){2}/, /[^\*_]+?/, /(\*|_){2}/, /(?=[\s,])/],
   post: (input) => ({ part: input.substring(2, input.length - 2) }),
 };
 
 let italic = {
   name: "ITALIC",
-  tokens: [/(?<=\s)/, /(\*|_){1}/, /[^\*_]+?/, /(\*|_){1}/, /(?=\s)/],
+  tokens: [/(?<=\s)/, /(\*|_){1}/, /[^\*_]+?/, /(\*|_){1}/, /(?=[\s,])/],
   post: (input) => ({ part: input.substring(1, input.length - 1) }),
 };
 

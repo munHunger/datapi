@@ -4,6 +4,11 @@
 
 <style>
   nav {
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    z-index: 99;
+    top: 0px;
     background: rgb(127, 138, 145);
     border-bottom: 1px solid rgba(255, 62, 0, 0.1);
     font-weight: 300;

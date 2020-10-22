@@ -3,12 +3,14 @@
     return this.fetch(`/index.json`)
       .then(r => r.json())
       .then(data => {
+        console.log(data);
         return { data };
       });
   }
 </script>
 
 <script>
+  import Sidebar from "../components/Sidebar.svelte";
   export let data;
 </script>
 
@@ -28,8 +30,11 @@
   .right-bg {
     position: fixed;
     height: 100%;
-    padding: 2rem;
     box-sizing: border-box;
+  }
+  .middle-bg,
+  .right-bg {
+    padding: 2rem;
   }
 
   .left-bg {
@@ -48,17 +53,6 @@
     left: 70%;
     width: 30%;
   }
-  .post {
-    position: absolute;
-    left: 10%;
-    width: 90%;
-    box-sizing: border-box;
-    padding: 20px;
-  }
-
-  .item {
-    cursor: pointer;
-  }
 </style>
 
 <svelte:head>
@@ -68,12 +62,7 @@
 <main>
   <div class="middle-bg" />
   <div class="left-bg">
-    {#each data as topic}
-      <div class="item">
-        {#if typeof topic === 'object'}{topic.name}{:else}{topic}{/if}
-      </div>
-    {/each}
+    <Sidebar {data} />
   </div>
   <div class="right-bg" />
-  <div class="post">index? {JSON.stringify(data, null, 2)}</div>
 </main>
